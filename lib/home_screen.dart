@@ -1,12 +1,13 @@
 import 'package:card_swiper/card_swiper.dart';
 import 'package:cars_by_porsche/utilities/fucntions.dart';
+import 'package:cars_by_porsche/widgets/car_info_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import 'data/cars_data.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -31,16 +32,19 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              color: Colors.grey,
+              color: Color.fromARGB(255, 148, 162, 174),
               margin: const EdgeInsets.symmetric(vertical: 24),
-              child: const Text(
-                "Porsche Collection",
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(
+                "Car Collection",
                 // style: TextStyle(color: Colors.red, fontSize: 24),
-                style: TextStyle(
+                style: themeData.textTheme.bodyMedium!.copyWith(
                   fontWeight: FontWeight.bold,
-                  fontSize: 24,
+                  fontSize: 18,
+                  color: Colors.grey.shade200,
                 ),
               ),
             ),
@@ -62,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 itemBuilder: (BuildContext context, int index) {
                   return SwipeCard(
-                    onTap: () {},
+                    price: listOfData[index]['price'],
                     isActive: activeIndex == index,
                     fromBack: fromBack,
                     title: listOfData[index]['name'],
@@ -85,88 +89,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 controller: _pageController,
                 physics: const BouncingScrollPhysics(),
                 itemBuilder: (context, index) {
-                  return Container(
-                    // clipBehavior: Clip.antiAlias,
-                    height: 100,
-                    margin: const EdgeInsets.all(12),
-                    // padding: EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                      // borderRadius: BorderRadius.circular(24),
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(24),
-                        bottomRight: Radius.circular(24),
-                        topLeft: Radius.circular(12),
-                        topRight: Radius.circular(12),
-                      ),
-                      // boxShadow: cardShadow,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
-                          spreadRadius: 0.5,
-                          blurRadius: 0.5,
-                          offset: const Offset(0, 1),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              // color: Colors.red,
-                              border: Border(
-                                right: BorderSide(color: Colors.grey.shade400),
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Porsche ' + listOfData[index]['name'],
-                                maxLines: 1,
-                                style: const TextStyle(color: Colors.black54, fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Divider(height: 1, thickness: 1, color: Colors.grey.shade400),
-                        // Text(
-                        //   listOfData[index]['name'],
-                        // ),
-                        Container(
-                          // height: 100,
-                          width: double.maxFinite,
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Expanded(
-                                child: CarStatsWidget(
-                                  statTitle: 'Year',
-                                  statValue: '2023',
-                                  showBorder: true,
-                                ),
-                              ),
-                              Expanded(
-                                child: CarStatsWidget(
-                                  statTitle: 'HP',
-                                  statValue: '2010',
-                                  showBorder: true,
-                                ),
-                              ),
-                              Expanded(
-                                child: CarStatsWidget(
-                                  statTitle: 'Speed',
-                                  statValue: '241',
-                                  showBorder: false,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                  return CardInfoWidget(
+                    carName: listOfData[index]['name'],
+                    year: listOfData[index]['year'],
+                    hp: listOfData[index]['hp'],
+                    speed: listOfData[index]['speed'],
                   );
                 },
               ),
@@ -178,67 +105,19 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class CarStatsWidget extends StatelessWidget {
-  const CarStatsWidget({
-    super.key,
-    required this.statTitle,
-    required this.statValue,
-    required this.showBorder,
-  });
-
-  final String statTitle;
-  final String statValue;
-  final bool showBorder;
-
-  @override
-  Widget build(BuildContext context) {
-    var themeData = Theme.of(context);
-    return Container(
-      height: 66,
-      // padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-      decoration: BoxDecoration(
-        border: showBorder
-            ? Border(
-                right: BorderSide(color: Colors.grey.shade400),
-              )
-            : null,
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            statTitle,
-            style: themeData.textTheme.bodyMedium!.copyWith(
-              color: Colors.grey.shade400,
-            ),
-          ),
-          Text(
-            statValue,
-            style: themeData.textTheme.bodyLarge!.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.grey.shade700,
-            ),
-          ),
-          const SizedBox(height: 4)
-        ],
-      ),
-    );
-  }
-}
-
 class SwipeCard extends StatefulWidget {
   const SwipeCard({
     super.key,
     required this.title,
-    required this.onTap,
+    required this.price,
     required this.image,
     required this.isActive,
     required this.fromBack,
   });
   final String title;
   final String image;
-  final Function onTap;
+  final String price;
+
   final bool isActive;
   final bool fromBack;
 
@@ -310,9 +189,9 @@ class _SwipeCardState extends State<SwipeCard> {
                   style: const TextStyle(color: Colors.black87, fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
-                const Text(
-                  "\$2,00,000 and Above",
-                  style: TextStyle(color: Colors.black54, fontSize: 14, fontWeight: FontWeight.bold),
+                Text(
+                  "From \$${widget.price}",
+                  style: const TextStyle(color: Colors.black54, fontSize: 14, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -322,3 +201,4 @@ class _SwipeCardState extends State<SwipeCard> {
     );
   }
 }
+// Check full code from the link
